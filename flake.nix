@@ -51,6 +51,7 @@
         darwin = {
           base = [
             nixHome.darwinModules.default
+            secretsManager.darwinModules.default
           ];
           desktop = [];
         };
