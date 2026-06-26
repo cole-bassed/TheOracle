@@ -57,6 +57,7 @@
                 formatter
                 helix
                 lsd
+                mkpasswd
                 nil
                 nixd
                 sops
