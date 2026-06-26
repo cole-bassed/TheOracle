@@ -48,7 +48,7 @@ nix run github:nix-community/nixos-anywhere -- \
 
 **Disk layout confirmed from lsblk:**
 
-```
+```sh
 sda       100G
 ├─sda1     99G   /
 ├─sda15    99M   /boot/efi

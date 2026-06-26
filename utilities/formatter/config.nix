@@ -50,7 +50,7 @@ forEachSystem {
           dialect = "sqlite";
         };
 
-        # Documentation
+        #~@ Documentation
         mdformat = {
           enable = true;
           plugins = ps:
@@ -65,10 +65,10 @@ forEachSystem {
           wrapText = true;
         };
 
-        # GitHub Actions (if you add workflows later)
+        #~@ GitHub Actions
         actionlint.enable = true;
 
-        # Images (lossless PNG optimization for web assets)
+        #~@ Images (lossless PNG optimization for web assets)
         oxipng.enable = true;
       };
     };
