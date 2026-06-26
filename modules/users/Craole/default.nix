@@ -85,7 +85,6 @@ in {
       gh = {
         enable = true;
         settings = {
-          # user-specific gh config
           git_protocol = "ssh";
           editor = "hx";
           aliases = {
@@ -94,10 +93,11 @@ in {
           };
         };
       };
+
       ssh = {
         enable = true;
         enableDefaultConfig = false;
-        matchBlocks = {
+        settings.matchBlocks = {
           "github.com" = {
             identityFile = "${HOME}/.ssh/github/Craole";
           };
