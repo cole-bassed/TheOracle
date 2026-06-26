@@ -7,7 +7,7 @@
   extraArgs,
 }: let
   inherit (libraries.attrsets) listToAttrs mapAttrsToList optionalAttrs recursiveUpdate;
-  inherit (libraries.lists) groupBy;
+  inherit (libraries.lists) groupBy optionals;
   inherit (libraries.modules) mkDefault;
   inherit (libraries.strings) mkHostId;
 
@@ -29,13 +29,34 @@
 
   build = name: cfg: let
     class = cfg.class or "nixos";
+    profile = cfg.profile or "server";
     flake = paths.local.hosts.${name};
+
+    modules' = {
+      core =
+        (modules.core.${class}.base or [])
+        ++ (
+          optionals
+          (profile == "desktop")
+          (modules.core.${class}.desktop or [])
+        );
+      home =
+        (modules.home.base or [])
+        ++ (
+          optionals
+          (profile == "desktop")
+          (modules.home.desktop or [])
+        );
+    };
+    # nixosModules = coreBase ++ libraries.optionals (profile == "desktop") coreDesktop;
+    # homeModules = homeBase ++ libraries.optionals (profile == "desktop") homeDesktop;
   in {
     inherit name class;
     value = (builders.${class} or (throw "Unknown class: ${class}")) {
       specialArgs = {inherit paths flake libraries;} // extraArgs;
       modules =
-        [
+        modules'.core
+        ++ [
           (paths'.hosts + "/${name}")
           ({pkgs, ...}: {
             networking = {
@@ -56,10 +77,12 @@
                 fd
                 formatter
                 helix
+                jq
                 lsd
                 mkpasswd
                 nil
                 nixd
+                sd
                 sops
                 ssh-to-age
               ];
@@ -109,6 +132,7 @@
           })
           (import paths'.users {
             inherit paths libraries;
+            modules = modules'.home;
             users =
               cfg.users or {
                 Craole = {};
@@ -116,16 +140,19 @@
                 CC = {};
               };
           })
-        ]
-        ++ (modules.${class} or []);
+        ];
     };
   };
 
   built = groupBy (host: host.class) (mapAttrsToList build hosts);
 in
-  (optionalAttrs
+  (
+    optionalAttrs
     (built ? nixos)
-    {nixosConfigurations = listToAttrs built.nixos;})
-  // (optionalAttrs
+    {nixosConfigurations = listToAttrs built.nixos;}
+  )
+  // (
+    optionalAttrs
     (built ? darwin)
-    {darwinConfigurations = listToAttrs built.darwin;})
+    {darwinConfigurations = listToAttrs built.darwin;}
+  )

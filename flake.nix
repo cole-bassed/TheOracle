@@ -29,36 +29,48 @@
     inherit (libraries.attrsets) mapAttrs;
 
     modules = with inputs; {
-      nixos = [
-        aiHermes.nixosModules.default
-        deployDisks.nixosModules.default
-        nixHome.nixosModules.default
-        secretsManager.nixosModules.default
-        shellDankMaterial.nixosModules.default
-        shellDankMaterialPlugins.nixosModules.default
-        shellNoctalia.nixosModules.default
-        styleManager.nixosModules.default
-        vicinae.nixosModules.default
-        vscodeServer.nixosModules.default
-        wmMango.nixosModules.mango
-        wmNiri.nixosModules.niri
-      ];
-      darwin = [
-        nixHome.darwinModules.default
-      ];
-      home = [
-        # TODO: What to do if an input has both nixosModules and homeModules?
-        shellCaelestia.homeManagerModules.default
-        shellDankMaterial.homeModules.default
-        shellDankMaterialPlugins.homeModules.default
-        shellNoctalia.homeModules.default
-        styleManager.homeModules.default
-        vicinae.homeModules.default
-        vscodeServer.homeModules.default
-        wmMango.hmModules.mango
-        wmNiri.hmModules.niri
-        browserZen.homeModules.default
-      ];
+      core = {
+        nixos = {
+          base = [
+            aiHermes.nixosModules.default
+            deployDisks.nixosModules.default
+            nixHome.nixosModules.default
+            secretsManager.nixosModules.default
+            vscodeServer.nixosModules.default
+          ];
+          desktop = [
+            shellDankMaterial.nixosModules.default
+            shellDankMaterialPlugins.nixosModules.default
+            shellNoctalia.nixosModules.default
+            styleManager.nixosModules.default
+            vicinae.nixosModules.default
+            wmMango.nixosModules.mango
+            wmNiri.nixosModules.niri
+          ];
+        };
+        darwin = {
+          base = [
+            nixHome.darwinModules.default
+          ];
+          desktop = [];
+        };
+      };
+      home = {
+        base = [
+          vscodeServer.homeModules.default
+        ];
+        desktop = [
+          shellCaelestia.homeManagerModules.default
+          shellDankMaterial.homeModules.default
+          shellDankMaterialPlugins.homeModules.default
+          shellNoctalia.homeModules.default
+          styleManager.homeModules.default
+          vicinae.homeModules.default
+          wmMango.hmModules.mango
+          wmNiri.hmModules.niri
+          browserZen.homeModules.default
+        ];
+      };
     };
 
     packages = let
@@ -102,7 +114,7 @@
   inputs = {
     #~@ Core/Nix Infrastructure
     nixCore.url = "nixpkgs/nixos-unstable";
-    nixLegacy.url = "nixpkgs/nixos-25.11";
+    nixLegacy.url = "nixpkgs/nixos-26.05";
     nixDarwin = {
       repo = "nix-darwin";
       owner = "LnL7";
