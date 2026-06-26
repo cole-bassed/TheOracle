@@ -1,11 +1,9 @@
 {
   config,
   pkgs,
-  paths,
+  flake,
   ...
-}: let
-  flake = paths.flake.TheOracle;
-in {
+}: {
   environment = {
     systemPackages = with pkgs; [
       alejandra
@@ -109,12 +107,5 @@ in {
   #~@ than failing on glibc/dynamic-linker mismatches.
   services = {
     vscode-server.enable = true;
-  };
-
-  nh = {
-    enable = true;
-    clean.enable = true;
-    clean.extraArgs = "--keep-since 4d --keep 3";
-    inherit flake;
   };
 }

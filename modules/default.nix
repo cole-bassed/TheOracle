@@ -1,4 +1,1 @@
-{
-  core = ./core;
-  home = ./home;
-}
+{}

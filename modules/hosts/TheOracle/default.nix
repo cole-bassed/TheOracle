@@ -1,4 +1,4 @@
-{}: {
+{
   imports = [
     ./base
 
@@ -6,7 +6,6 @@
     ./identity.nix
     ./networking.nix
     ./secrets.nix
-    ./users.nix
     ./web.nix
   ];
 }

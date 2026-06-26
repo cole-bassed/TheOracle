@@ -53,55 +53,12 @@
       darwin = nix-darwin.lib;
     });
     inherit (libraries.systems) mkPackages forEachSystem;
-    inherit (libraries.attrsets) listToAttrs mapAttrsToList mapAttrs;
-    inherit (libraries.strings) mkHostId;
-    inherit (libraries.lists) groupBy;
-
-    mkHosts = hosts: let
-      builders = {
-        nixos = libraries.nixos.nixosSystem;
-        darwin = libraries.darwin.darwinSystem;
-      };
-
-      build = name: cfg: let
-        class = cfg.class or "nixos";
-      in {
-        inherit name;
-        value = (builders.${class} or (throw "Unknown class: ${class}")) {
-          specialArgs = {inherit self paths inputs;};
-          modules =
-            [
-              (paths.store.hosts + "/${name}")
-              {
-                networking = {
-                  hostName = name;
-                  hostId = cfg.id or (mkHostId name);
-                };
-                nixpkgs = {
-                  config.allowUnfree = true;
-                  pkgs = packages.final.${cfg.system};
-                };
-              }
-            ]
-            ++ (
-              map
-              (user: paths.store.users + "/${user}")
-              (cfg.users or ["Craole" "Cole-bassed"])
-            )
-            ++ (modules.${class} or []);
-        };
-      };
-
-      grouped = groupBy (host: host.class) (mapAttrsToList build hosts);
-    in
-      mapAttrs (class: hostList: listToAttrs hostList) {
-        nixos = grouped.nixos or [];
-        darwin = grouped.darwin or [];
-      };
+    inherit (libraries.attrsets) mapAttrs;
 
     packages = let
       base = mkPackages {
         inherit (inputs) nixpkgs;
+        config = {allowUnfree = true;};
         overlays = with inputs; [
           rust-overlay.overlays.default
         ];
@@ -124,12 +81,19 @@
       darwin = [];
       home-manager = [];
     };
-  in
-    {inherit (packages.treefmt) formatter checks;}
-    // mkHosts {
-      TheOracle = {
-        class = "nixos";
-        system = "aarch64-linux";
-      };
+    extraArgs = {
+      inherit self inputs;
+      lix = libraries;
     };
+  in
+    import paths.store.hosts {
+      inherit paths libraries packages modules extraArgs;
+      hosts = {
+        TheOracle = {
+          class = "nixos";
+          system = "aarch64-linux";
+        };
+      };
+    }
+    // {inherit (packages.treefmt) formatter checks;};
 }
