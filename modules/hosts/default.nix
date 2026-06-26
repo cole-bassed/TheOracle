@@ -112,7 +112,8 @@
             users =
               cfg.users or {
                 Craole = {};
-                "Cole-bassed" = {};
+                CBS = {};
+                CC = {};
               };
           })
         ]

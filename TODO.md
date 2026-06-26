@@ -1,4 +1,4 @@
-**CONTINUATION PROMPT:**
+# TODO
 
 I'm setting up a NixOS flake config for a project called **TheOracle** — an OCI Ampere A1 (aarch64-linux) VPS currently running Ubuntu 24.04. I'm deploying from **QBX** (my local machine) via SSH.
 
@@ -69,9 +69,3 @@ sda       100G
 - Ubuntu user: `ubuntu@TheOracle`
 - Host ed25519 pubkey: `ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIC6un8SelpbLSx/28q7kv7Jq1GKGTd8aG8tGJbLaGn6K`
 - Derived age pubkey: `age14ju8288fj59hh3xw5zqx8tklpyhp23gzc8fhj9m5l46h0vwxtuuqugmxzz`
-
-**Please dump the full repo at the start so you can see the complete current state before continuing.**
-
----
-
-That covers everything. Drop that prompt plus the repo dump and the next session can pick up exactly where we left off.

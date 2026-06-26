@@ -9,15 +9,10 @@
     kernel.sysctl."vm.swappiness" = 10;
   };
 
-  fileSystems."/" = {
-    device = "/dev/sda1";
-    fsType = "ext4";
-  };
-
   swapDevices = [
     {
       device = "/var/lib/swapfile";
-      size = 8192; #> MB
+      size = 8192;
     }
   ];
 
