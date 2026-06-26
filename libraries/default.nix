@@ -1,10 +1,10 @@
 {nixpkgs, ...} @ libraries: let
-  inherit (nixpkgs.attrsets) recursiveUpdate;
   lib = nixpkgs;
-  lix =
-    (import ./systems.nix {inherit lib;})
-    // (import ./attrsets.nix {inherit lib;});
+  inherit (lib.attrsets) recursiveUpdate;
 in
-  recursiveUpdate
-  (recursiveUpdate lib lix)
-  (recursiveUpdate libraries {inherit nixpkgs lix;})
+  recursiveUpdate lib (
+    {}
+    // (import ./systems.nix {inherit lib;})
+    // (import ./attrsets.nix {inherit lib;})
+    // (recursiveUpdate {inherit nixpkgs;} libraries)
+  )

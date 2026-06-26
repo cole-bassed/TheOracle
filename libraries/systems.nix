@@ -1,10 +1,17 @@
 {lib}: let
   exports = {
-    scoped = {inherit forEach get per supported mkPackages;} // aliases;
+    scoped =
+      {
+        inherit forEach get per supported mkPackages;
+        nixosSystem = lib.nixosSystem or {};
+        darwinSystem = lib.darwinSystem or {};
+      }
+      // aliases;
     global = aliases;
   };
   inherit (lib.attrsets) genAttrs;
   inherit (lib.lists) elem uniqueStrings;
+  inherit (lib.trivial) isFunction;
 
   aliases = {
     supportedSystems = supported;
@@ -86,7 +93,17 @@
   > perSystem (system: { format = "raw"; })
   # => { aarch64-linux = { format = "raw"; }; x86_64-linux = { format = "raw"; }; }
   */
-  per = fn: genAttrs (supported {}) (system: fn system);
+  per = arg: let
+    opts =
+      if isFunction arg
+      then {fn = arg;}
+      else arg;
+    packages = opts.packages or {};
+    extra = opts.extra or [];
+  in
+    genAttrs
+    (supported {inherit extra;})
+    (system: opts.fn packages.${system});
 
   /**
   Instantiate an unfree-enabled package set across all target architectures,

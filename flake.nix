@@ -55,8 +55,7 @@
       treefmt = treefmt-nix.lib;
       home-manager = home-manager.lib;
     };
-    inherit (libraries.systems) mkPackages;
-    inherit (libraries.nixpkgs.systems) nixosSystem;
+    inherit (libraries.systems) mkPackages nixosSystem;
 
     overlays = with inputs; [
       rust-overlay.overlays.default

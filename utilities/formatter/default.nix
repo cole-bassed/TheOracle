@@ -1,17 +1,17 @@
 {
   projectRoot,
-  lib,
+  libraries,
   packages,
   ...
 }: let
-  inherit (lib.attrsets) mapAttrs;
-  inherit (lib.treefmt) evalModule;
-  inherit (lib.systems) forEachSystem;
+  inherit (libraries.treefmt) evalModule;
+  inherit (libraries.systems) forEachSystem;
 
   # Pass down the decoupled pkgs mapping right at the computation site
-  evaluated = forEachSystem packages (
+  evalFor = forEachSystem packages (
     pkgs:
       evalModule pkgs {
+        # projectRootFile = "flake.nix";
         inherit projectRoot;
 
         programs = {
@@ -23,18 +23,16 @@
         settings.global.excludes = ["secrets/*" "*.yaml" "*.md"];
       }
   );
-in {
-  packages =
-    mapAttrs (system: eval: {
-      default = eval.config.build.wrapper;
-    })
-    evaluated;
 
-  formatter = mapAttrs (system: eval: eval.config.build.wrapper) evaluated;
+  formatter =
+    forEachSystem
+    (pkgs: (evalFor pkgs).config.build.wrapper);
 
   checks =
-    mapAttrs (system: eval: {
-      formatting = eval.config.build.check projectRoot;
-    })
-    evaluated;
-}
+    forEachSystem
+    (pkgs: {formatting = (evalFor pkgs).config.build.check projectRoot;});
+  # packages =
+  #   mapAttrs
+  #   (system: eval: {default = eval.config.build.wrapper;})
+  #   evalFor;
+in {inherit formatter checks;}
