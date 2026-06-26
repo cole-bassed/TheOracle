@@ -10,6 +10,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    disko = {
+      url = "github:nix-community/disko";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     deploy-rs = {
       url = "github:serokell/deploy-rs";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -50,9 +55,7 @@
       };
       local = {
         age.keyFile = "/var/lib/sops-nix/key.txt";
-        hosts = {
-          TheOracle = "/etc/nixos";
-        };
+        hosts.TheOracle = "/etc/nixos";
       };
     };
 
@@ -84,6 +87,7 @@
 
     modules = with inputs; {
       nixos = [
+        disko.nixosModules.disko
         sops-nix.nixosModules.sops
         vscode-server.nixosModules.default
         home-manager.nixosModules.home-manager

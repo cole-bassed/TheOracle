@@ -2,7 +2,7 @@
 #?  sshd remains present and configured defensively, but is not the
 #?  intended access path - see modules/firewall.nix and tailscale.nix.
 #?  This is the "in case I ever need raw sshd over tailscale0" layer.
-_: {
+{config, ...}: {
   networking = {
     domain = "";
 
@@ -50,6 +50,7 @@ _: {
       enable = true;
       useRoutingFeatures = "client"; #? or "both"
       extraUpFlags = ["--ssh" "--accept-dns=false"];
+      authKeyFile = config.sops.secrets."tailscale/authKey".path;
     };
   };
 }

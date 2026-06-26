@@ -44,22 +44,30 @@
             };
             nixpkgs.pkgs = packages.final.${cfg.system};
             sops = {
-              inherit (paths) defaultSopsFile;
-              age = {inherit (paths.local.age) keyFile;};
+              inherit (paths.store) defaultSopsFile;
+              inherit (paths.local) age;
               secrets = {};
             };
             time.timeZone = mkDefault "America/Jamaica";
             i18n.defaultLocale = mkDefault "en_US.UTF-8";
             environment = {
               systemPackages = with pkgs; [
+                curl
+                fd
                 formatter
                 helix
+                lsd
                 nil
                 nixd
                 sops
                 ssh-to-age
               ];
               shellAliases = {
+                l = "lsd --git --group-directories-first";
+                ll = "l --long --almost-all";
+                lt = "l --tree";
+                ld = "l --directory-only --total-size";
+                ltd = "l --tree --directory-only --total-size";
                 cddots = "cd $DOTS";
                 eddots = "$EDITOR $DOTS";
               };
@@ -87,7 +95,7 @@
                   init.defaultBranch = "main";
                   pull.rebase = true;
                   push.default = "current";
-                  safe.directory = flake;
+                  safe.directory = [flake "/etc/nixos"];
                 };
               };
               nh = {

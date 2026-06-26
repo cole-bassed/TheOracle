@@ -1,7 +1,6 @@
 {
   config,
   pkgs,
-  flake,
   ...
 }: {
   environment = {
@@ -45,21 +44,6 @@
           ];
         }))
     ];
-    shellAliases = {
-      l = "lsd --git --group-directories-first";
-      ll = "l --long --almost-all";
-      lt = "l --tree";
-      ld = "l --directory-only --total-size";
-      ltd = "l --tree --directory-only --total-size";
-      ede = "$EDITOR";
-      cddots = "cd $DOTS";
-      eddots = "$EDITOR $DOTS";
-    };
-    variables = {
-      FLAKE = flake;
-      DOTS = flake;
-      EDITOR = "hx";
-    };
   };
 
   programs = {
@@ -91,7 +75,6 @@
         };
         pull.rebase = true;
         push.default = "current";
-        safe.directory = flake;
       };
     };
     tmux = {
