@@ -2,7 +2,8 @@
   exports = {
     scoped =
       {
-        inherit forEach get per supported mkPackages;
+        inherit get per supported mkPackages;
+        forEach = per;
         nixosSystem = lib.nixosSystem or {};
         darwinSystem = lib.darwinSystem or {};
       }
@@ -16,7 +17,7 @@
   aliases = {
     supportedSystems = supported;
     getSystem = get;
-    forEachSystem = forEach;
+    forEachSystem = per;
     perSystem = per;
     mkSystemPackages = mkPackages;
   };
@@ -47,34 +48,6 @@
   # => false
   */
   get = system: elem system (supported {});
-
-  /**
-  Dynamic system mapping that yields the clean target package compilation sets
-  directly down into downstream expressions. Passes the system-specific instantiated
-  package set layer out as an input to your evaluation functions.
-
-  # Type
-  ```nix
-  forEach :: AttrsOf PackageSet -> (PackageSet -> AttrSet) -> AttrsOf AttrSet
-  ```
-
-  # Arguments
-  packages
-  : An attribute set indexed by architecture containing instantiated package layers
-  (e.g., `packages = { aarch64-linux = ... ; };`).
-
-  systems
-  : Optional list of target architectures to process. Defaults to the base supported set.
-
-  # Examples
-  > forEachSystem packages (pkgs: lib.evalModule pkgs { ... })
-  # => { aarch64-linux = { ... }; x86_64-linux = { ... }; }
-  */
-  forEach = {
-    packages,
-    systems ? (supported {}),
-  }:
-    genAttrs systems (system: packages.${system});
 
   /**
   Simple system string iterator for building, checking, or compiling infrastructure

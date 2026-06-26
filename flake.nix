@@ -70,7 +70,7 @@
         sops-nix.nixosModules.sops
         vscode-server.nixosModules.default
         home-manager.nixosModules.home-manager
-        paths.store.modules.core
+        (paths.store.modules + "/core")
       ];
       darwin = [];
       home-manager = [];
