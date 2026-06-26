@@ -4,9 +4,23 @@
   libraries,
   modules ? [],
 }: let
-  inherit (libraries.attrsets) namesOf mapAttrsToList;
+  inherit (libraries.attrsets) namesOf mapAttrsToList recursiveUpdate;
+
+  paths' = let
+    resolved =
+      recursiveUpdate {
+        store = {
+          hosts = ../hosts;
+          users = ./.;
+        };
+      }
+      paths;
+  in {inherit (resolved.store) hosts users;};
 
   build = name: _cfg: ({config, ...}: {
+    imports = [(paths'.users + "/${name}")];
+    _module.args.name = name;
+
     sops.secrets."users/${name}/password".neededForUsers = true;
     users.users.${name} = {
       isNormalUser = true;
@@ -16,9 +30,10 @@
     home-manager.users.${name}._module.args.name = name;
   });
 in {
-  imports =
-    (map (name: paths.users + "/${name}") (namesOf users))
-    ++ (mapAttrsToList build users);
+  # imports =
+  #   (map (name: paths'.users + "/${name}") (namesOf users))
+  #   ++ (mapAttrsToList build users);
+  imports = mapAttrsToList build users;
 
   users.mutableUsers = false;
 

@@ -139,6 +139,29 @@
         "type": "github"
       }
     },
+    "browserZen": {
+      "inputs": {
+        "home-manager": [
+          "nixHome"
+        ],
+        "nixpkgs": [
+          "nixCore"
+        ]
+      },
+      "locked": {
+        "lastModified": 1782460457,
+        "narHash": "sha256-R3EXRxLmv1uqMtacBi0L8gUCOWC6EpCPSXebf8e+vac=",
+        "owner": "0xc000022070",
+        "repo": "zen-browser-flake",
+        "rev": "563e515460b6c3bb68552979e3abbca447f8aaf1",
+        "type": "github"
+      },
+      "original": {
+        "owner": "0xc000022070",
+        "repo": "zen-browser-flake",
+        "type": "github"
+      }
+    },
     "bun2nix": {
       "inputs": {
         "flake-parts": [
@@ -196,6 +219,31 @@
         "type": "github"
       }
     },
+    "deployAnywhere": {
+      "inputs": {
+        "disko": "disko",
+        "nix-vm-test": "nix-vm-test",
+        "nixos-images": "nixos-images",
+        "nixos-stable": "nixos-stable",
+        "nixpkgs": [
+          "nixCore"
+        ],
+        "treefmt-nix": "treefmt-nix_2"
+      },
+      "locked": {
+        "lastModified": 1782285665,
+        "narHash": "sha256-ISUNn+z9+BIDGRrNAmEfghvzFmDgKtGHGEYqIDvGeWk=",
+        "owner": "nix-community",
+        "repo": "nixos-anywhere",
+        "rev": "4b74194d2927a7741d023b3fd2a0d252059f75ee",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "repo": "nixos-anywhere",
+        "type": "github"
+      }
+    },
     "deployColmena": {
       "inputs": {
         "flake-compat": "flake-compat",
@@ -240,31 +288,6 @@
         "type": "github"
       }
     },
-    "deployNixosAnywhere": {
-      "inputs": {
-        "disko": "disko",
-        "nix-vm-test": "nix-vm-test",
-        "nixos-images": "nixos-images",
-        "nixos-stable": "nixos-stable",
-        "nixpkgs": [
-          "nixCore"
-        ],
-        "treefmt-nix": "treefmt-nix_2"
-      },
-      "locked": {
-        "lastModified": 1782285665,
-        "narHash": "sha256-ISUNn+z9+BIDGRrNAmEfghvzFmDgKtGHGEYqIDvGeWk=",
-        "owner": "nix-community",
-        "repo": "nixos-anywhere",
-        "rev": "4b74194d2927a7741d023b3fd2a0d252059f75ee",
-        "type": "github"
-      },
-      "original": {
-        "owner": "nix-community",
-        "repo": "nixos-anywhere",
-        "type": "github"
-      }
-    },
     "deployRS": {
       "inputs": {
         "flake-compat": "flake-compat_2",
@@ -290,7 +313,7 @@
     "disko": {
       "inputs": {
         "nixpkgs": [
-          "deployNixosAnywhere",
+          "deployAnywhere",
           "nixpkgs"
         ]
       },
@@ -628,7 +651,7 @@
     "nix-vm-test": {
       "inputs": {
         "nixpkgs": [
-          "deployNixosAnywhere",
+          "deployAnywhere",
           "nixpkgs"
         ]
       },
@@ -744,11 +767,11 @@
     "nixos-images": {
       "inputs": {
         "nixos-stable": [
-          "deployNixosAnywhere",
+          "deployAnywhere",
           "nixos-stable"
         ],
         "nixos-unstable": [
-          "deployNixosAnywhere",
+          "deployAnywhere",
           "nixpkgs"
         ]
       },
@@ -999,9 +1022,10 @@
       "inputs": {
         "aiHermes": "aiHermes",
         "aiToolkit": "aiToolkit",
+        "browserZen": "browserZen",
+        "deployAnywhere": "deployAnywhere",
         "deployColmena": "deployColmena",
         "deployDisks": "deployDisks",
-        "deployNixosAnywhere": "deployNixosAnywhere",
         "deployRS": "deployRS",
         "langRust": "langRust",
         "nixCore": "nixCore",
@@ -1018,10 +1042,9 @@
         "styleManager": "styleManager",
         "treeFormatter": "treeFormatter",
         "vicinae": "vicinae",
-        "vscode-server": "vscode-server",
+        "vscodeServer": "vscodeServer",
         "wmMango": "wmMango",
-        "wmNiri": "wmNiri",
-        "zenBrowser": "zenBrowser"
+        "wmNiri": "wmNiri"
       }
     },
     "scenefx": {
@@ -1403,7 +1426,7 @@
     "treefmt-nix_2": {
       "inputs": {
         "nixpkgs": [
-          "deployNixosAnywhere",
+          "deployAnywhere",
           "nixpkgs"
         ]
       },
@@ -1507,7 +1530,7 @@
         "type": "github"
       }
     },
-    "vscode-server": {
+    "vscodeServer": {
       "inputs": {
         "flake-utils": "flake-utils_2",
         "nixpkgs": [
@@ -1605,29 +1628,6 @@
       "original": {
         "owner": "Supreeeme",
         "repo": "xwayland-satellite",
-        "type": "github"
-      }
-    },
-    "zenBrowser": {
-      "inputs": {
-        "home-manager": [
-          "nixHome"
-        ],
-        "nixpkgs": [
-          "nixCore"
-        ]
-      },
-      "locked": {
-        "lastModified": 1782460457,
-        "narHash": "sha256-R3EXRxLmv1uqMtacBi0L8gUCOWC6EpCPSXebf8e+vac=",
-        "owner": "0xc000022070",
-        "repo": "zen-browser-flake",
-        "rev": "563e515460b6c3bb68552979e3abbca447f8aaf1",
-        "type": "github"
-      },
-      "original": {
-        "owner": "0xc000022070",
-        "repo": "zen-browser-flake",
         "type": "github"
       }
     }

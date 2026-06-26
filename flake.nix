@@ -32,7 +32,7 @@
       nixos = [
         aiHermes.nixosModules.default
         deployDisks.nixosModules.default
-        home-manager.nixosModules.home-manager
+        nixHome.nixosModules.default
         secretsManager.nixosModules.default
         shellDankMaterial.nixosModules.default
         shellDankMaterialPlugins.nixosModules.default
@@ -43,7 +43,9 @@
         wmMango.nixosModules.mango
         wmNiri.nixosModules.niri
       ];
-      darwin = [];
+      darwin = [
+        nixHome.darwinModules.default
+      ];
       home = [
         # TODO: What to do if an input has both nixosModules and homeModules?
         shellCaelestia.homeManagerModules.default
@@ -69,8 +71,6 @@
           deployColmena.overlays.default
           deployRS.overlays.default
           shellQuick.overlays.default
-          # vscode-server.overlays.default
-          # browserZen.overlays.default
         ];
       };
       treefmt = import paths.store.formatter {
