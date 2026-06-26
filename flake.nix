@@ -61,9 +61,10 @@
       rust-overlay.overlays.default
     ];
 
-    packages = mkPackages {
-      inherit nixpkgs overlays;
-    };
+    packages = let
+      base = mkPackages {inherit nixpkgs overlays;};
+      final = fmt.packages;
+    in {inherit base final;};
 
     modules = with inputs; {
       nixos = [
@@ -78,29 +79,30 @@
 
     fmt = import paths.store.formatter {
       projectRoot = paths.store.src;
-      inherit libraries packages;
+      inherit libraries;
+      packages = packages.base;
     };
-  in
-    {
-      nixosConfigurations = {
-        TheOracle = let
-          system = "aarch64-linux";
-          class = "nixos";
-        in
-          nixosSystem {
-            specialArgs = {inherit self paths inputs;};
-            modules =
-              [
-                {
-                  nixpkgs = {
-                    config.allowUnfree = true;
-                    pkgs = packages.${system};
-                  };
-                }
-              ]
-              ++ (modules.${class} or []);
-          };
-      };
-    }
-    // fmt;
+  in {
+    nixosConfigurations = {
+      TheOracle = let
+        system = "aarch64-linux";
+        class = "nixos";
+      in
+        nixosSystem {
+          specialArgs = {inherit self paths inputs;};
+          modules =
+            [
+              {
+                nixpkgs = {
+                  config.allowUnfree = true;
+                  pkgs = packages.final.${system};
+                };
+              }
+            ]
+            ++ (modules.${class} or []);
+        };
+    };
+
+    inherit (fmt) formatter checks;
+  };
 }

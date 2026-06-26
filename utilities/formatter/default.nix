@@ -1,6 +1,11 @@
-{lix, ...}: let
-  inherit (lix.treefmt) evalModule projectRoot;
-  inherit (lix.systems) forEachSystem;
+{
+  libraries,
+  packages,
+  ...
+}: let
+  inherit (libraries.treefmt) evalModule projectRoot;
+  inherit (libraries.systems) forEachSystem;
+  inherit (libraries.attrsets) mapAttrs;
 
   evalFor = pkgs:
     evalModule pkgs {
@@ -10,10 +15,25 @@
         statix.enable = true;
       };
     };
-in {
-  formatter = forEachSystem (pkgs: (evalFor pkgs).config.build.wrapper);
 
-  checks = forEachSystem (pkgs: {
-    formatting = (evalFor pkgs).config.build.check projectRoot;
-  });
+  evaluated = forEachSystem {
+    inherit packages;
+    fn = evalFor;
+  };
+
+  formatter =
+    mapAttrs
+    (_: eval: eval.config.build.wrapper)
+    evaluated;
+in {
+  inherit formatter;
+  checks =
+    mapAttrs
+    (_: eval: {formatting = eval.config.build.check projectRoot;})
+    evaluated;
+
+  packages =
+    mapAttrs
+    (system: pkgs: pkgs // {formatter = formatter.${system};})
+    packages;
 }
