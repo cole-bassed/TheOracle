@@ -1,12 +1,10 @@
 {
-  libraries,
+  forEachSystem,
+  mapAttrs,
+  evalModule,
+  projectRoot,
   packages,
-  ...
 }: let
-  inherit (libraries.treefmt) evalModule projectRoot;
-  inherit (libraries.systems) forEachSystem;
-  inherit (libraries.attrsets) mapAttrs;
-
   evalFor = pkgs:
     evalModule pkgs {
       projectRootFile = "flake.nix";

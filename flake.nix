@@ -56,6 +56,8 @@
       home-manager = home-manager.lib;
     };
     inherit (libraries.systems) mkPackages nixosSystem;
+    inherit (libraries.systems) forEachSystem;
+    inherit (libraries.attrsets) mapAttrs;
 
     overlays = with inputs; [
       rust-overlay.overlays.default
@@ -63,8 +65,14 @@
 
     packages = let
       base = mkPackages {inherit nixpkgs overlays;};
-      final = fmt.packages;
-    in {inherit base final;};
+      treefmt = import paths.store.formatter {
+        inherit forEachSystem mapAttrs;
+        inherit (libraries.treefmt) evalModule;
+        projectRoot = paths.store.src;
+        packages = base;
+      };
+      final = treefmt.packages;
+    in {inherit base treefmt final;};
 
     modules = with inputs; {
       nixos = [
@@ -75,12 +83,6 @@
       ];
       darwin = [];
       home-manager = [];
-    };
-
-    fmt = import paths.store.formatter {
-      projectRoot = paths.store.src;
-      inherit libraries;
-      packages = packages.base;
     };
   in {
     nixosConfigurations = {
@@ -102,7 +104,6 @@
             ++ (modules.${class} or []);
         };
     };
-
-    inherit (fmt) formatter checks;
+    inherit (packages.treefmt) formatter checks;
   };
 }
