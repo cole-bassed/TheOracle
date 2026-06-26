@@ -4,8 +4,6 @@
       {
         inherit get per supported mkPackages;
         forEach = per;
-        nixosSystem = lib.nixosSystem or {};
-        darwinSystem = lib.darwinSystem or {};
       }
       // aliases;
     global = aliases;

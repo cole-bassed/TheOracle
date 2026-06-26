@@ -1,9 +1,9 @@
-# flake.nix
 {
   description = "TheOracle: NixOS on OCI Ampere A1 (free tier) - personal server";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nix-darwin.url = "github:LnL7/nix-darwin";
 
     home-manager = {
       url = "github:nix-community/home-manager";
@@ -31,40 +31,81 @@
     };
   };
 
-  outputs = {
-    self,
-    nixpkgs,
-    treefmt-nix,
-    home-manager,
-    ...
-  } @ inputs: let
+  outputs = {self, ...} @ inputs: let
     paths = {
       store = {
         src = ./.;
         modules = ./modules;
         libraries = ./libraries;
         formatter = ./utilities/formatter;
+        hosts = ./modules/hosts;
+        users = ./modules/users;
       };
       hosts = {
         TheOracle = "/etc/nixos";
       };
     };
 
-    libraries = import paths.store.libraries {
-      nixpkgs = nixpkgs.lib;
+    libraries = import paths.store.libraries (with inputs; {
+      nixos = nixpkgs.lib;
       treefmt = treefmt-nix.lib;
       home-manager = home-manager.lib;
-    };
-    inherit (libraries.systems) mkPackages nixosSystem;
-    inherit (libraries.systems) forEachSystem;
-    inherit (libraries.attrsets) mapAttrs;
+      darwin = nix-darwin.lib;
+    });
+    inherit (libraries.systems) mkPackages forEachSystem;
+    inherit (libraries.attrsets) listToAttrs mapAttrsToList mapAttrs;
+    inherit (libraries.strings) mkHostId;
+    inherit (libraries.lists) groupBy;
 
-    overlays = with inputs; [
-      rust-overlay.overlays.default
-    ];
+    mkHosts = hosts: let
+      builders = {
+        nixos = libraries.nixos.nixosSystem;
+        darwin = libraries.darwin.darwinSystem;
+      };
+
+      build = name: cfg: let
+        class = cfg.class or "nixos";
+      in {
+        inherit name;
+        value = (builders.${class} or (throw "Unknown class: ${class}")) {
+          specialArgs = {inherit self paths inputs;};
+          modules =
+            [
+              (paths.store.hosts + "/${name}")
+              {
+                networking = {
+                  hostName = name;
+                  hostId = cfg.id or (mkHostId name);
+                };
+                nixpkgs = {
+                  config.allowUnfree = true;
+                  pkgs = packages.final.${cfg.system};
+                };
+              }
+            ]
+            ++ (
+              map
+              (user: paths.store.users + "/${user}")
+              (cfg.users or ["Craole" "Cole-bassed"])
+            )
+            ++ (modules.${class} or []);
+        };
+      };
+
+      grouped = groupBy (host: host.class) (mapAttrsToList build hosts);
+    in
+      mapAttrs (class: hostList: listToAttrs hostList) {
+        nixos = grouped.nixos or [];
+        darwin = grouped.darwin or [];
+      };
 
     packages = let
-      base = mkPackages {inherit nixpkgs overlays;};
+      base = mkPackages {
+        inherit (inputs) nixpkgs;
+        overlays = with inputs; [
+          rust-overlay.overlays.default
+        ];
+      };
       treefmt = import paths.store.formatter {
         inherit forEachSystem mapAttrs;
         inherit (libraries.treefmt) evalModule;
@@ -79,31 +120,16 @@
         sops-nix.nixosModules.sops
         vscode-server.nixosModules.default
         home-manager.nixosModules.home-manager
-        (paths.store.modules + "/core")
       ];
       darwin = [];
       home-manager = [];
     };
-  in {
-    nixosConfigurations = {
-      TheOracle = let
-        system = "aarch64-linux";
+  in
+    {inherit (packages.treefmt) formatter checks;}
+    // mkHosts {
+      TheOracle = {
         class = "nixos";
-      in
-        nixosSystem {
-          specialArgs = {inherit self paths inputs;};
-          modules =
-            [
-              {
-                nixpkgs = {
-                  config.allowUnfree = true;
-                  pkgs = packages.final.${system};
-                };
-              }
-            ]
-            ++ (modules.${class} or []);
-        };
+        system = "aarch64-linux";
+      };
     };
-    inherit (packages.treefmt) formatter checks;
-  };
 }
