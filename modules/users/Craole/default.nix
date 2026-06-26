@@ -97,19 +97,19 @@ in {
       ssh = {
         enable = true;
         enableDefaultConfig = false;
-        settings.matchBlocks = {
+        settings = {
           "github.com" = {
-            identityFile = "${HOME}/.ssh/github/Craole";
+            IdentityFile = "${HOME}/.ssh/github/Craole";
           };
           "github.com-cole-bassed" = {
-            hostname = "github.com";
-            identityFile = "${HOME}/.ssh/github/cole-bassed";
-            user = "git";
+            HostName = "github.com";
+            IdentityFile = "${HOME}/.ssh/github/cole-bassed";
+            User = "git";
           };
           "github.com-craole-cc" = {
-            hostname = "github.com";
-            identityFile = "${HOME}/.ssh/github/craole-cc";
-            user = "git";
+            HostName = "github.com";
+            IdentityFile = "${HOME}/.ssh/github/craole-cc";
+            User = "git";
           };
         };
       };
