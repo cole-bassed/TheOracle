@@ -1,3 +1,4 @@
+# flake.nix
 {
   description = "TheOracle: NixOS on OCI Ampere A1 (free tier) - personal server";
 
@@ -23,33 +24,84 @@
       url = "github:nix-community/nixos-vscode-server";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    treefmt-nix = {
+      url = "github:numtide/treefmt-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = {self, ...} @ inputs: let
-    inherit (inputs.nixpkgs) lib;
-    inherit (lib) nixosSystem;
-
+  outputs = {
+    self,
+    nixpkgs,
+    treefmt-nix,
+    home-manager,
+    ...
+  } @ inputs: let
     paths = {
       store = {
         src = ./.;
         modules = ./modules;
+        libraries = ./libraries;
+        formatter = ./utilities/formatter;
       };
-      flake = {
+      hosts = {
         TheOracle = "/etc/nixos";
       };
     };
-  in {
-    nixosConfigurations = {
-      TheOracle = nixosSystem {
-        system = "aarch64-linux";
-        specialArgs = {inherit self paths;};
-        modules = with inputs; [
-          {nixpkgs.overlays = [rust-overlay.overlays.default];}
-          sops-nix.nixosModules.sops
-          vscode-server.nixosModules.default
-          paths.modules.core
-        ];
-      };
+
+    libraries = import paths.store.libraries {
+      nixpkgs = nixpkgs.lib;
+      treefmt = treefmt-nix.lib;
+      home-manager = home-manager.lib;
     };
-  };
+    inherit (libraries.systems) mkPackages;
+    inherit (libraries.nixpkgs.systems) nixosSystem;
+
+    overlays = with inputs; [
+      rust-overlay.overlays.default
+    ];
+
+    packages = mkPackages {
+      inherit nixpkgs overlays;
+    };
+
+    modules = with inputs; {
+      nixos = [
+        sops-nix.nixosModules.sops
+        vscode-server.nixosModules.default
+        home-manager.nixosModules.home-manager
+        paths.store.modules.core
+      ];
+      darwin = [];
+      home-manager = [];
+    };
+
+    fmt = import paths.store.formatter {
+      projectRoot = paths.store.src;
+      inherit libraries packages;
+    };
+  in
+    {
+      nixosConfigurations = {
+        TheOracle = let
+          system = "aarch64-linux";
+          class = "nixos";
+        in
+          nixosSystem {
+            specialArgs = {inherit self paths inputs;};
+            modules =
+              [
+                {
+                  nixpkgs = {
+                    config.allowUnfree = true;
+                    pkgs = packages.${system};
+                  };
+                }
+              ]
+              ++ (modules.${class} or []);
+          };
+      };
+    }
+    // fmt;
 }
