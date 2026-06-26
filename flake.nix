@@ -10,6 +10,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    deploy-rs = {
+      url = "github:serokell/deploy-rs";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     rust-overlay = {
       url = "github:oxalica/rust-overlay";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -40,9 +45,14 @@
         formatter = ./utilities/formatter;
         hosts = ./modules/hosts;
         users = ./modules/users;
+        secrets = ./secrets;
+        defaultSopsFile = ./secrets/secrets.yaml;
       };
-      hosts = {
-        TheOracle = "/etc/nixos";
+      local = {
+        age.keyFile = "/var/lib/sops-nix/key.txt";
+        hosts = {
+          TheOracle = "/etc/nixos";
+        };
       };
     };
 
@@ -81,6 +91,7 @@
       darwin = [];
       home-manager = [];
     };
+
     extraArgs = {
       inherit self inputs;
       lix = libraries;
@@ -92,6 +103,7 @@
         TheOracle = {
           class = "nixos";
           system = "aarch64-linux";
+          profile = "server";
         };
       };
     }

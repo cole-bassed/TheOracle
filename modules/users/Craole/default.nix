@@ -1,21 +1,9 @@
-{
-  users.users.craole = {
-    isNormalUser = true;
-    description = "Craig 'Craole' Cole";
-    extraGroups = ["wheel" "networkmanager"];
-
-    #~@ Replace with the actual public key before first deploy -
-    #~@ this is the only auth path into sshd once password auth
-    #~@ is disabled. Tailscale ssh is the independent fallback.
-    openssh.authorizedKeys.keys = [
-      "ssh-ed25519 AAAA...REPLACE-ME cole-bassed@theoracle"
-    ];
-
-    #> hashedPasswordFile can be wired through sops-nix later if a
-    #> local console password is ever wanted; left unset deliberately
-    #> for now since mutableUsers = false requires explicit handling.
-    hashedPassword = null;
+{name, ...}: {
+  users.users.${name}.description = "Craig Cole";
+  home-manager.users.${name} = {
+    programs.git = {
+      userName = "Craole";
+      userEmail = "32288735+Craole@users.noreply.github.com";
+    };
   };
 }
-# [ "/etc/nixos" flake ];
-

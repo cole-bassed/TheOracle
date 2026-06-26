@@ -73,7 +73,7 @@
     direnv = {
       enable = true;
       silent = true;
-      enableBashIntegration = config.programs.base.enable;
+      enableBashIntegration = config.programs.bash.enable;
     };
     git = {
       enable = true;
