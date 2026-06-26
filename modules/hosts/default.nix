@@ -85,6 +85,8 @@
                 sd
                 sops
                 ssh-to-age
+                yq
+                age
               ];
               shellAliases = {
                 l = "lsd --git --group-directories-first";
@@ -94,6 +96,7 @@
                 ltd = "l --tree --directory-only --total-size";
                 cddots = "cd $DOTS";
                 eddots = "$EDITOR $DOTS";
+                prj = "cd ~/Projects";
               };
               variables = {
                 EDITOR = "hx";
@@ -134,11 +137,7 @@
             inherit paths libraries;
             modules = modules'.home;
             users =
-              cfg.users or {
-                Craole = {};
-                CBS = {};
-                CC = {};
-              };
+              cfg.users or {Craole = {};};
           })
         ];
     };

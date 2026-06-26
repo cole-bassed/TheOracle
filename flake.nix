@@ -22,7 +22,7 @@
     libraries = import paths.store.libraries (with inputs; {
       nixos = nixCore.lib;
       treefmt = treeFormatter.lib;
-      home-manager = nixHome.lib;
+      home-manager = nixHome.lib.hm;
       darwin = nixDarwin.lib;
     });
     inherit (libraries.systems) mkPackages forEachSystem;
