@@ -28,12 +28,49 @@
     inherit (libraries.systems) mkPackages forEachSystem;
     inherit (libraries.attrsets) mapAttrs;
 
+    modules = with inputs; {
+      nixos = [
+        aiHermes.nixosModules.default
+        deployDisks.nixosModules.default
+        home-manager.nixosModules.home-manager
+        secretsManager.nixosModules.default
+        shellDankMaterial.nixosModules.default
+        shellDankMaterialPlugins.nixosModules.default
+        shellNoctalia.nixosModules.default
+        styleManager.nixosModules.default
+        vicinae.nixosModules.default
+        vscodeServer.nixosModules.default
+        wmMango.nixosModules.mango
+        wmNiri.nixosModules.niri
+      ];
+      darwin = [];
+      home = [
+        # TODO: What to do if an input has both nixosModules and homeModules?
+        shellCaelestia.homeManagerModules.default
+        shellDankMaterial.homeModules.default
+        shellDankMaterialPlugins.homeModules.default
+        shellNoctalia.homeModules.default
+        styleManager.homeModules.default
+        vicinae.homeModules.default
+        vscodeServer.homeModules.default
+        wmMango.hmModules.mango
+        wmNiri.hmModules.niri
+        browserZen.homeModules.default
+      ];
+    };
+
     packages = let
       base = mkPackages {
         nixpkgs = inputs.nixCore;
         config = {allowUnfree = true;};
         overlays = with inputs; [
-          rust-overlay.overlays.default
+          langRust.overlays.default
+          aiToolkit.overlays.default
+          deployColmena.overlays.default
+          deployRS.overlays.default
+          shellQuick.overlays.default
+          # vscode-server.overlays.default
+          # browserZen.overlays.default
         ];
       };
       treefmt = import paths.store.formatter {
@@ -44,19 +81,6 @@
       };
       final = treefmt.packages;
     in {inherit base treefmt final;};
-
-    modules = with inputs; {
-      nixos = [
-        deployDisks.nixosModules.dis
-        noctalia.homeModules.defaultko
-        sops-nix.nixosModules.sops
-        vscode-server.nixosModules.default
-        home-manager.nixosModules.home-manager
-        # noctalia.homeModules.default
-      ];
-      darwin = [];
-      home-manager = [];
-    };
 
     extraArgs = {
       inherit self inputs;
@@ -135,7 +159,7 @@
       type = "github";
       inputs.nixpkgs.follows = "nixCore";
     };
-    deployNixosAnywhere = {
+    deployAnywhere = {
       repo = "nixos-anywhere";
       owner = "nix-community";
       type = "github";
@@ -220,13 +244,13 @@
       owner = "vicinaehq";
       type = "github";
     };
-    vscode-server = {
+    vscodeServer = {
       repo = "nixos-vscode-server";
       owner = "nix-community";
       inputs.nixpkgs.follows = "nixCore";
       type = "github";
     };
-    zenBrowser = {
+    browserZen = {
       url = "github:0xc000022070/zen-browser-flake";
       inputs = {
         nixpkgs.follows = "nixCore";
@@ -234,44 +258,4 @@
       };
     };
   };
-
-  # inputs = {
-  #   nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-  #   nix-darwin.url = "github:LnL7/nix-darwin";
-
-  #   home-manager = {
-  #     url = "github:nix-community/home-manager";
-  #     inputs.nixpkgs.follows = "nixpkgs";
-  #   };
-
-  #   disko = {
-  #     url = "github:nix-community/disko";
-  #     inputs.nixpkgs.follows = "nixpkgs";
-  #   };
-
-  #   deploy-rs = {
-  #     url = "github:serokell/deploy-rs";
-  #     inputs.nixpkgs.follows = "nixpkgs";
-  #   };
-
-  #   rust-overlay = {
-  #     url = "github:oxalica/rust-overlay";
-  #     inputs.nixpkgs.follows = "nixpkgs";
-  #   };
-
-  #   sops-nix = {
-  #     url = "github:Mic92/sops-nix";
-  #     inputs.nixpkgs.follows = "nixpkgs";
-  #   };
-
-  #   vscode-server = {
-  #     url = "github:nix-community/nixos-vscode-server";
-  #     inputs.nixpkgs.follows = "nixpkgs";
-  #   };
-
-  #   treefmt-nix = {
-  #     url = "github:numtide/treefmt-nix";
-  #     inputs.nixpkgs.follows = "nixpkgs";
-  #   };
-  # };
 }
