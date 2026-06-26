@@ -12,17 +12,9 @@ I'm setting up a NixOS flake config for a project called **TheOracle** — an OC
 
 **What still needs doing in order:**
 
-1. Create `.sops.yaml` with the age key above
-2. Generate hashed passwords for users `Craole`, `Cole-bassed`, `CC` using `mkpasswd -m sha-512`
-3. Get a Tailscale auth key from the Tailscale admin console
-4. Create and encrypt `secrets/secrets.yaml` with sops containing:
-   - `tailscale/authKey`
-   - `users/Craole/password`
-   - `users/Cole-bassed/password`
-   - `users/CC/password`
-5. Fix the disko input URL in `flake.nix` — currently wrong (`nix-os/disko`), should be `nix-community/disko`
-6. Set up `--extra-files` directory preserving the SSH host key through nixos-anywhere install
-7. Run nixos-anywhere:
+[] Fix the disko input URL in `flake.nix` — currently wrong (`nix-os/disko`), should be `nix-community/disko`
+[] Set up `--extra-files` directory preserving the SSH host key through nixos-anywhere install
+[] Run nixos-anywhere:
 
 ```bash
 mkdir -p /tmp/extra-files/etc/ssh
