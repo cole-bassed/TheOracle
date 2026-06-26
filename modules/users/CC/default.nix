@@ -1,9 +1,9 @@
-{name, ...}: {
-  users.users.${name} = {
+{
+  users.users."CC" = {
     description = "Craig 'Craole' Cole";
     openssh.authorizedKeys.keys = ["ssh-ed25519 AAAA...REPLACE-ME cc@theoracle"];
   };
-  home-manager.users.${name} = {
+  home-manager.users."CC" = {
     programs = {
       git = {
         userName = "craole-cc";

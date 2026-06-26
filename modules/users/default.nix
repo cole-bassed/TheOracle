@@ -19,7 +19,6 @@
 
   build = name: _cfg: ({config, ...}: {
     imports = [(paths'.users + "/${name}")];
-    _module.args.name = name;
 
     sops.secrets."users/${name}/password".neededForUsers = true;
     users.users.${name} = {
@@ -27,12 +26,8 @@
       extraGroups = ["wheel" "networkmanager"];
       hashedPasswordFile = config.sops.secrets."users/${name}/password".path;
     };
-    home-manager.users.${name}._module.args.name = name;
   });
 in {
-  # imports =
-  #   (map (name: paths'.users + "/${name}") (namesOf users))
-  #   ++ (mapAttrsToList build users);
   imports = mapAttrsToList build users;
 
   users.mutableUsers = false;
